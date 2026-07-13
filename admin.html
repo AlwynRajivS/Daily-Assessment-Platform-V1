@@ -638,6 +638,39 @@
             <span class="muted">Ranked by total marks</span>
             <button class="btn small outline" onclick="downloadToppers()">⬇ Download Topper PDF</button>
           </div>
+
+          <div class="row3" style="margin-top:15px;">
+
+  <div class="field">
+    <label>From Date</label>
+    <input
+      type="date"
+      id="lbFromDate">
+  </div>
+
+  <div class="field">
+    <label>To Date</label>
+    <input
+      type="date"
+      id="lbToDate">
+  </div>
+
+  <div class="field"
+       style="display:flex;align-items:flex-end;">
+
+    <button
+      class="btn"
+      style="width:100%;"
+      onclick="downloadDateRangeLeaderboard()">
+
+      ⬇ Download Date Range PDF
+
+    </button>
+
+  </div>
+
+</div>
+
           <div class="table-wrap"><table>
             <thead><tr><th>Rank</th><th>Roll No</th><th>Name</th><th>Dept</th><th>Year</th><th>Sec</th><th>Marks</th><th>Correct/Attempted</th></tr></thead>
             <tbody id="lbBody"></tbody>
@@ -729,8 +762,8 @@
 
 <script>
   // ⚠️ PASTE YOUR DEPLOYED WEB APP URL BELOW (Deploy → Manage deployments → copy "Web app" URL)
-    const BASE_URL = "https://script.google.com/macros/s/AKfycbz-E_Q_km1ziuhC7unuU36Rj0PM1WeZ7Z-tBPUAePj-bGMZh4AaeGqmKLCw1z_Z9lgcag/exec";
-    const API_URL = "https://script.google.com/macros/s/AKfycbz-E_Q_km1ziuhC7unuU36Rj0PM1WeZ7Z-tBPUAePj-bGMZh4AaeGqmKLCw1z_Z9lgcag/exec";
+    const BASE_URL = "https://script.google.com/macros/s/AKfycbwTTKQAgPz1372vjPI3idX2zVvKTjIicHIRccpWvITTgKxGbeBQYtiDkh6TkZ83ufVPMg/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwTTKQAgPz1372vjPI3idX2zVvKTjIicHIRccpWvITTgKxGbeBQYtiDkh6TkZ83ufVPMg/exec";
   let allStudents = [], allQuestions = [], distinctYS = {years:[], sections:[]}, lbPeriod = 'day', lastFocused = 'qText';
 
   // ---- Guard ----
@@ -2453,6 +2486,73 @@ async function downloadToppers() {
     );
 
   }
+
+}
+
+async function downloadDateRangeLeaderboard() {
+
+    const fromDate =
+        document.getElementById("lbFromDate").value;
+
+    const toDate =
+        document.getElementById("lbToDate").value;
+
+    if (!fromDate || !toDate) {
+
+        toast(
+            "Select both From and To dates",
+            "error"
+        );
+
+        return;
+    }
+
+    if (fromDate > toDate) {
+
+        toast(
+            "From Date cannot be after To Date",
+            "error"
+        );
+
+        return;
+    }
+
+    const response = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+
+            action: "generateDateRangeTopperPdf",
+
+            fromDate: fromDate,
+
+            toDate: toDate,
+
+            dept:
+                document.getElementById("lbDept").value,
+
+            year:
+                document.getElementById("lbYear").value,
+
+            section:
+                document.getElementById("lbSection").value
+
+        })
+    });
+
+    const res = await response.json();
+
+    if (res.success) {
+
+    downloadBase64Pdf(res);
+
+    } else {
+
+        toast(
+            res.message,
+            "error"
+        );
+
+    }
 
 }
 
