@@ -2832,7 +2832,8 @@ document.addEventListener(
             method: "POST",
             body: JSON.stringify({
                 action: "getLeaderboard",
-                period: lbPeriod
+                period: lbPeriod,
+                dept: session.dept
             })
         });
 
